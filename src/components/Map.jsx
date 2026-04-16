@@ -5,11 +5,18 @@ import {
   Marker,
   Popup,
   Circle,
+  CircleMarker,
   useMap,
   Polyline,
 } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+
+// Route colors for different ghost routes
+const ROUTE_COLORS = [
+  '#06b6d4', '#f59e0b', '#8b5cf6', '#ef4444',
+  '#10b981', '#ec4899', '#f97316', '#6366f1',
+];
 
 // ── Custom pulsing user marker ──
 const createUserIcon = (color = '#06b6d4') => {
@@ -40,7 +47,7 @@ const createUserIcon = (color = '#06b6d4') => {
   });
 };
 
-// ── Other user marker (no pulse, smaller) ──
+// ── Other user marker ──
 const createOtherUserIcon = (role = 'commuter') => {
   const color = role === 'driver' ? '#f59e0b' : '#8b5cf6';
   const emoji = role === 'driver' ? '🚗' : '👤';
@@ -64,10 +71,29 @@ const createOtherUserIcon = (role = 'commuter') => {
   });
 };
 
-// ── Auto-pan map to follow user position ──
+// ── Stop marker icon ──
+const createStopIcon = () => {
+  return L.divIcon({
+    className: 'user-marker',
+    html: `
+      <div style="
+        width:20px;height:20px;
+        background:#f59e0b22;
+        border:2px solid #f59e0b;
+        border-radius:50%;
+        display:flex;align-items:center;justify-content:center;
+        font-size:10px;
+      ">🚏</div>
+    `,
+    iconSize: [20, 20],
+    iconAnchor: [10, 10],
+    popupAnchor: [0, -12],
+  });
+};
+
+// ── Auto-pan map ──
 function MapFollower({ position, shouldFollow }) {
   const map = useMap();
-
   useEffect(() => {
     if (position && shouldFollow) {
       map.setView([position.lat, position.lng], map.getZoom(), {
@@ -76,11 +102,9 @@ function MapFollower({ position, shouldFollow }) {
       });
     }
   }, [position, shouldFollow, map]);
-
   return null;
 }
 
-// ── Map invalidation on container resize ──
 function MapResizer() {
   const map = useMap();
   useEffect(() => {
@@ -91,16 +115,12 @@ function MapResizer() {
 }
 
 /**
- * Map component — Leaflet + OpenStreetMap
+ * Map component
  *
  * Props:
- *   position: { lat, lng, accuracy } — user's live position
- *   trackingHistory: [{ lat, lng }] — trail of positions
- *   isTracking: boolean — whether GPS is active
- *   markerColor: string — color for user marker
- *   activeUsers: Map — other connected users' positions
- *   className: string — custom CSS classes
- *   children: ReactNode — additional map layers
+ *   position, trackingHistory, isTracking, markerColor — user GPS
+ *   activeUsers — other connected users
+ *   ghostRoutes — detected ghost routes from server
  */
 export default function Map({
   position,
@@ -108,26 +128,22 @@ export default function Map({
   isTracking = false,
   markerColor = '#06b6d4',
   activeUsers = new Map(),
+  ghostRoutes = [],
   className = '',
   children,
 }) {
   const [followUser, setFollowUser] = useState(true);
   const mapRef = useRef(null);
 
-  // Default center: India (Lucknow area for demo)
   const defaultCenter = [26.8467, 80.9462];
-  const center = position
-    ? [position.lat, position.lng]
-    : defaultCenter;
-
+  const center = position ? [position.lat, position.lng] : defaultCenter;
   const userIcon = createUserIcon(markerColor);
+  const stopIcon = createStopIcon();
 
-  // Trail polyline from tracking history
   const trailPositions = trackingHistory
     .filter((p) => p.lat && p.lng)
     .map((p) => [p.lat, p.lng]);
 
-  // Convert activeUsers Map to array for rendering
   const otherUsers = Array.from(activeUsers.values());
 
   return (
@@ -140,19 +156,119 @@ export default function Map({
         ref={mapRef}
         style={{ background: '#0d1117' }}
       >
-        {/* Dark-themed map tiles */}
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         />
 
         <MapResizer />
         <MapFollower position={position} shouldFollow={followUser} />
 
-        {/* User position marker */}
+        {/* ── Ghost Routes (polylines) ── */}
+        {ghostRoutes.map((route, idx) => {
+          const color = ROUTE_COLORS[idx % ROUTE_COLORS.length];
+          const routeCoords = route.coordinates.map((c) => [c[0], c[1]]);
+
+          return (
+            <div key={route._id}>
+              {/* Route polyline */}
+              <Polyline
+                positions={routeCoords}
+                pathOptions={{
+                  color,
+                  weight: 4,
+                  opacity: Math.min(0.9, 0.3 + route.confidence / 100),
+                  lineCap: 'round',
+                  lineJoin: 'round',
+                }}
+              >
+                <Popup className="dark-popup">
+                  <div style={{ color: '#e5e7eb', fontSize: '12px' }}>
+                    <p style={{ fontWeight: 600, marginBottom: '4px', color }}>
+                      👻 {route.name}
+                    </p>
+                    <p style={{ color: '#9ca3af' }}>
+                      Users: {route.userCount} | Confidence: {route.confidence}%
+                    </p>
+                    <p style={{ color: '#9ca3af' }}>
+                      Stops: {route.stops?.length || 0}
+                    </p>
+                  </div>
+                </Popup>
+              </Polyline>
+
+              {/* Start marker */}
+              {routeCoords.length > 0 && (
+                <CircleMarker
+                  center={routeCoords[0]}
+                  radius={6}
+                  pathOptions={{
+                    color,
+                    fillColor: color,
+                    fillOpacity: 0.8,
+                    weight: 2,
+                  }}
+                >
+                  <Popup className="dark-popup">
+                    <div style={{ color: '#e5e7eb', fontSize: '12px' }}>
+                      <p style={{ fontWeight: 600 }}>🟢 Start</p>
+                      <p style={{ color: '#9ca3af' }}>{route.name}</p>
+                    </div>
+                  </Popup>
+                </CircleMarker>
+              )}
+
+              {/* End marker */}
+              {routeCoords.length > 1 && (
+                <CircleMarker
+                  center={routeCoords[routeCoords.length - 1]}
+                  radius={6}
+                  pathOptions={{
+                    color: '#ef4444',
+                    fillColor: '#ef4444',
+                    fillOpacity: 0.8,
+                    weight: 2,
+                  }}
+                >
+                  <Popup className="dark-popup">
+                    <div style={{ color: '#e5e7eb', fontSize: '12px' }}>
+                      <p style={{ fontWeight: 600 }}>🔴 End</p>
+                      <p style={{ color: '#9ca3af' }}>{route.name}</p>
+                    </div>
+                  </Popup>
+                </CircleMarker>
+              )}
+
+              {/* Stop markers */}
+              {route.stops?.map((stop, sIdx) => {
+                const coords = stop.location?.coordinates;
+                if (!coords) return null;
+                return (
+                  <Marker
+                    key={`stop-${route._id}-${sIdx}`}
+                    position={[coords[1], coords[0]]}
+                    icon={stopIcon}
+                  >
+                    <Popup className="dark-popup">
+                      <div style={{ color: '#e5e7eb', fontSize: '12px' }}>
+                        <p style={{ fontWeight: 600, marginBottom: '4px' }}>
+                          🚏 {stop.name}
+                        </p>
+                        <p style={{ color: '#9ca3af' }}>
+                          Avg dwell: {stop.avgDwellTime || 0}s
+                        </p>
+                      </div>
+                    </Popup>
+                  </Marker>
+                );
+              })}
+            </div>
+          );
+        })}
+
+        {/* ── User position ── */}
         {position && (
           <>
-            {/* Accuracy circle */}
             <Circle
               center={[position.lat, position.lng]}
               radius={position.accuracy || 20}
@@ -164,26 +280,18 @@ export default function Map({
                 opacity: 0.3,
               }}
             />
-
-            {/* User marker */}
-            <Marker
-              position={[position.lat, position.lng]}
-              icon={userIcon}
-            >
+            <Marker position={[position.lat, position.lng]} icon={userIcon}>
               <Popup className="dark-popup">
                 <div style={{ color: '#e5e7eb', fontSize: '12px' }}>
-                  <p style={{ fontWeight: 600, marginBottom: '4px' }}>📍 Your Location</p>
+                  <p style={{ fontWeight: 600, marginBottom: '4px' }}>📍 You</p>
                   <p style={{ color: '#9ca3af' }}>
                     {position.lat.toFixed(5)}, {position.lng.toFixed(5)}
                   </p>
-                  {position.speed !== null && position.speed > 0 && (
+                  {position.speed > 0 && (
                     <p style={{ color: '#9ca3af' }}>
-                      Speed: {(position.speed * 3.6).toFixed(1)} km/h
+                      {(position.speed * 3.6).toFixed(1)} km/h
                     </p>
                   )}
-                  <p style={{ color: '#6b7280', fontSize: '11px' }}>
-                    Accuracy: ±{position.accuracy?.toFixed(0)}m
-                  </p>
                 </div>
               </Popup>
             </Marker>
@@ -204,7 +312,7 @@ export default function Map({
           />
         )}
 
-        {/* ── Other connected users ── */}
+        {/* Other users */}
         {otherUsers.map((user) => (
           <Marker
             key={user.socketId}
@@ -219,94 +327,68 @@ export default function Map({
                 <p style={{ color: '#9ca3af', textTransform: 'capitalize' }}>
                   {user.role}
                 </p>
-                {user.position.speed > 0 && (
-                  <p style={{ color: '#9ca3af' }}>
-                    Speed: {(user.position.speed * 3.6).toFixed(1)} km/h
-                  </p>
-                )}
               </div>
             </Popup>
           </Marker>
         ))}
 
-        {/* Additional layers from parent */}
         {children}
       </MapContainer>
 
-      {/* Follow user toggle button */}
+      {/* Follow button */}
       {position && (
         <button
           onClick={() => {
             setFollowUser(!followUser);
             if (!followUser && mapRef.current) {
-              const map = mapRef.current;
-              map.setView([position.lat, position.lng], map.getZoom(), {
-                animate: true,
-              });
+              mapRef.current.setView(
+                [position.lat, position.lng],
+                mapRef.current.getZoom(),
+                { animate: true }
+              );
             }
           }}
-          className={`
-            absolute bottom-4 right-4 z-[1000]
-            w-10 h-10 rounded-xl flex items-center justify-center
-            transition-all duration-200 cursor-pointer
-            ${
-              followUser
-                ? 'bg-cyan-500/20 border border-cyan-500/40 text-cyan-400'
-                : 'bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10'
-            }
-          `}
+          className={`absolute bottom-4 right-4 z-[1000] w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 cursor-pointer ${
+            followUser
+              ? 'bg-cyan-500/20 border border-cyan-500/40 text-cyan-400'
+              : 'bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10'
+          }`}
           title={followUser ? 'Stop following' : 'Follow my location'}
         >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M12 2L12 6" />
-            <path d="M12 18L12 22" />
-            <path d="M2 12L6 12" />
-            <path d="M18 12L22 12" />
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 2L12 6" /><path d="M12 18L12 22" />
+            <path d="M2 12L6 12" /><path d="M18 12L22 12" />
             <circle cx="12" cy="12" r="4" />
           </svg>
         </button>
       )}
 
-      {/* GPS status indicator */}
+      {/* GPS status */}
       <div className="absolute top-4 left-4 z-[1000]">
-        <div
-          className={`
-            flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium
-            backdrop-blur-md
-            ${
-              isTracking
-                ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400'
-                : 'bg-white/5 border border-white/10 text-gray-500'
-            }
-          `}
-        >
-          <div
-            className={`w-2 h-2 rounded-full ${
-              isTracking ? 'bg-emerald-400 animate-pulse' : 'bg-gray-600'
-            }`}
-          />
+        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium backdrop-blur-md ${
+          isTracking
+            ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400'
+            : 'bg-white/5 border border-white/10 text-gray-500'
+        }`}>
+          <div className={`w-2 h-2 rounded-full ${isTracking ? 'bg-emerald-400 animate-pulse' : 'bg-gray-600'}`} />
           {isTracking ? 'GPS Active' : 'GPS Inactive'}
         </div>
       </div>
 
-      {/* Online users count */}
-      {otherUsers.length > 0 && (
-        <div className="absolute top-4 left-32 z-[1000]">
+      {/* Online + Routes count */}
+      <div className="absolute top-4 left-32 z-[1000] flex gap-2">
+        {otherUsers.length > 0 && (
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium backdrop-blur-md bg-purple-500/15 border border-purple-500/30 text-purple-400">
             <div className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
             {otherUsers.length} online
           </div>
-        </div>
-      )}
+        )}
+        {ghostRoutes.length > 0 && (
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium backdrop-blur-md bg-amber-500/15 border border-amber-500/30 text-amber-400">
+            👻 {ghostRoutes.length} route{ghostRoutes.length !== 1 ? 's' : ''}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
