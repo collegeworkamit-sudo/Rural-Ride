@@ -8,6 +8,7 @@ export default function useSocket() {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [activeUsers, setActiveUsers] = useState(new Map());
   const [ghostRoutes, setGhostRoutes] = useState([]);
+  const [etas, setEtas] = useState([]);
   const [tripActive, setTripActive] = useState(false);
   const [lastTripResult, setLastTripResult] = useState(null);
   const connectedRef = useRef(false);
@@ -50,10 +51,13 @@ export default function useSocket() {
       setGhostRoutes(routes || []);
     }
 
-    // Trip result from server
     function onTripResult(result) {
       setLastTripResult(result);
       setTripActive(false);
+    }
+
+    function onEtaResponse(etaData) {
+      setEtas(etaData || []);
     }
 
     socket.on('connect', onConnect);
@@ -63,6 +67,7 @@ export default function useSocket() {
     socket.on('gps:user-disconnected', onUserDisconnected);
     socket.on('routes:updated', onRoutesUpdated);
     socket.on('trip:result', onTripResult);
+    socket.on('eta:response', onEtaResponse);
 
     return () => {
       socket.off('connect', onConnect);
@@ -72,6 +77,7 @@ export default function useSocket() {
       socket.off('gps:user-disconnected', onUserDisconnected);
       socket.off('routes:updated', onRoutesUpdated);
       socket.off('trip:result', onTripResult);
+      socket.off('eta:response', onEtaResponse);
     };
   }, []);
 
@@ -125,10 +131,22 @@ export default function useSocket() {
     socket.emit('routes:get');
   }, []);
 
+  // Request ETA from current position
+  const requestETA = useCallback((position) => {
+    if (socket.connected && position) {
+      socket.emit('eta:request', {
+        lat: position.lat,
+        lng: position.lng,
+        speed: position.speed || 0,
+      });
+    }
+  }, []);
+
   return {
     isConnected,
     activeUsers,
     ghostRoutes,
+    etas,
     tripActive,
     lastTripResult,
     sendPosition,
@@ -137,5 +155,6 @@ export default function useSocket() {
     startTrip,
     endTrip,
     fetchRoutes,
+    requestETA,
   };
 }

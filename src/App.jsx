@@ -6,6 +6,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import CommuterView from './pages/CommuterView';
 import DriverView from './pages/DriverView';
+import LeaderboardPage from './pages/LeaderboardPage';
+import RewardsPage from './pages/RewardsPage';
 
 // Protected route wrapper
 function ProtectedRoute({ children }) {
@@ -91,6 +93,24 @@ function App() {
             element={
               <ProtectedRoute>
                 <DriverView />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/leaderboard"
+            element={
+              <ProtectedRoute>
+                <LeaderboardPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/rewards"
+            element={
+              <ProtectedRoute>
+                <RewardsPage />
               </ProtectedRoute>
             }
           />

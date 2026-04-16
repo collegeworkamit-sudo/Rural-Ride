@@ -5,6 +5,7 @@ import useSocket from '../hooks/useSocket';
 import Map from '../components/Map';
 import Button from '../components/common/Button';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 import {
   MapPin,
   Navigation,
@@ -25,6 +26,7 @@ import {
 
 export default function DriverView() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const geo = useGeolocation();
   const sock = useSocket();
 
@@ -46,7 +48,7 @@ export default function DriverView() {
         toast.success(
           `Trip logged! ${r.pointsLogged} GPS points. ${
             r.isNewRoute ? `New route: ${r.route?.name}` : r.route ? `Merged: ${r.route?.name}` : ''
-          }`,
+          }${r.rewards?.totalAwarded ? ` | +${r.rewards.totalAwarded} pts 🏆` : ''}`,
           { duration: 5000 }
         );
       } else {
@@ -97,7 +99,10 @@ export default function DriverView() {
               {sock.isConnected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
             </div>
 
-            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-xs">
+            <div
+              onClick={() => navigate('/leaderboard')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-xs cursor-pointer hover:bg-yellow-500/20 transition-colors"
+            >
               <Trophy className="w-3 h-3" /><span className="font-medium">{user?.points || 0}</span>
             </div>
 

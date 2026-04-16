@@ -135,7 +135,7 @@ export default function Map({
   const [followUser, setFollowUser] = useState(true);
   const mapRef = useRef(null);
 
-  const defaultCenter = [26.8467, 80.9462];
+  const defaultCenter = [28.5747, 77.2195]; // Delhi
   const center = position ? [position.lat, position.lng] : defaultCenter;
   const userIcon = createUserIcon(markerColor);
   const stopIcon = createStopIcon();
