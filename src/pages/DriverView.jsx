@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import useGeolocation from '../hooks/useGeolocation';
+import useSocket from '../hooks/useSocket';
 import Map from '../components/Map';
 import Button from '../components/common/Button';
 import {
@@ -7,12 +9,14 @@ import {
   Navigation,
   LogOut,
   Trophy,
-  Locate,
-  LocateOff,
   Compass,
   Gauge,
   Car,
   Radio,
+  LocateOff,
+  Wifi,
+  WifiOff,
+  Users,
 } from 'lucide-react';
 
 export default function DriverView() {
@@ -25,6 +29,23 @@ export default function DriverView() {
     stopTracking,
     trackingHistory,
   } = useGeolocation();
+  const { isConnected, activeUsers, sendPosition, connect, disconnect } =
+    useSocket();
+
+  // Connect socket on mount
+  useEffect(() => {
+    if (user) {
+      connect(user);
+    }
+    return () => disconnect();
+  }, [user, connect, disconnect]);
+
+  // Send position updates to socket when tracking
+  useEffect(() => {
+    if (position && isTracking && isConnected) {
+      sendPosition(position);
+    }
+  }, [position, isTracking, isConnected, sendPosition]);
 
   return (
     <div className="h-screen flex flex-col bg-[#0a0f1c] text-white">
@@ -60,6 +81,21 @@ export default function DriverView() {
               )}
             </Button>
 
+            {/* Socket status */}
+            <div
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs ${
+                isConnected
+                  ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
+                  : 'bg-red-500/10 border border-red-500/20 text-red-400'
+              }`}
+            >
+              {isConnected ? (
+                <Wifi className="w-3 h-3" />
+              ) : (
+                <WifiOff className="w-3 h-3" />
+              )}
+            </div>
+
             {/* Points badge */}
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-xs">
               <Trophy className="w-3 h-3" />
@@ -93,6 +129,7 @@ export default function DriverView() {
             trackingHistory={trackingHistory}
             isTracking={isTracking}
             markerColor="#14b8a6"
+            activeUsers={activeUsers}
           />
 
           {/* GPS Error banner */}
@@ -149,10 +186,10 @@ export default function DriverView() {
               active={!!position}
             />
             <InfoCard
-              icon={<MapPin className="w-4 h-4" />}
-              label="Points Broadcast"
-              value={trackingHistory.length.toString()}
-              active={trackingHistory.length > 0}
+              icon={<Users className="w-4 h-4" />}
+              label="Users Online"
+              value={activeUsers.size.toString()}
+              active={activeUsers.size > 0}
             />
           </div>
 
@@ -177,12 +214,12 @@ export default function DriverView() {
             <div className="flex items-center gap-2 text-xs text-gray-500">
               <div
                 className={`w-2 h-2 rounded-full ${
-                  isTracking ? 'bg-red-400 animate-pulse' : 'bg-gray-600'
+                  isConnected ? 'bg-emerald-400 animate-pulse' : 'bg-red-500'
                 }`}
               />
-              {isTracking
-                ? 'Broadcasting your location...'
-                : 'Tap "Go Live" to start sharing'}
+              {isConnected
+                ? 'Connected to live network'
+                : 'Disconnected — reconnecting...'}
             </div>
           </div>
         </div>
@@ -191,7 +228,6 @@ export default function DriverView() {
   );
 }
 
-// ── Info card sub-component ──
 function InfoCard({ icon, label, value, active }) {
   return (
     <div

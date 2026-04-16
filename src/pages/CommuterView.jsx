@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import useGeolocation from '../hooks/useGeolocation';
+import useSocket from '../hooks/useSocket';
 import Map from '../components/Map';
 import Button from '../components/common/Button';
 import {
@@ -11,6 +13,9 @@ import {
   LocateOff,
   Compass,
   Gauge,
+  Wifi,
+  WifiOff,
+  Users,
 } from 'lucide-react';
 
 export default function CommuterView() {
@@ -23,6 +28,23 @@ export default function CommuterView() {
     stopTracking,
     trackingHistory,
   } = useGeolocation();
+  const { isConnected, activeUsers, sendPosition, connect, disconnect } =
+    useSocket();
+
+  // Connect socket on mount
+  useEffect(() => {
+    if (user) {
+      connect(user);
+    }
+    return () => disconnect();
+  }, [user, connect, disconnect]);
+
+  // Send position updates to socket when tracking
+  useEffect(() => {
+    if (position && isTracking && isConnected) {
+      sendPosition(position);
+    }
+  }, [position, isTracking, isConnected, sendPosition]);
 
   return (
     <div className="h-screen flex flex-col bg-[#0a0f1c] text-white">
@@ -58,6 +80,21 @@ export default function CommuterView() {
               )}
             </Button>
 
+            {/* Socket status */}
+            <div
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs ${
+                isConnected
+                  ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400'
+                  : 'bg-red-500/10 border border-red-500/20 text-red-400'
+              }`}
+            >
+              {isConnected ? (
+                <Wifi className="w-3 h-3" />
+              ) : (
+                <WifiOff className="w-3 h-3" />
+              )}
+            </div>
+
             {/* Points badge */}
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-xs">
               <Trophy className="w-3 h-3" />
@@ -84,13 +121,14 @@ export default function CommuterView() {
 
       {/* Main content */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Map — takes most of the space */}
+        {/* Map */}
         <div className="flex-1 relative">
           <Map
             position={position}
             trackingHistory={trackingHistory}
             isTracking={isTracking}
             markerColor="#06b6d4"
+            activeUsers={activeUsers}
           />
 
           {/* GPS Error banner */}
@@ -101,13 +139,12 @@ export default function CommuterView() {
           )}
         </div>
 
-        {/* Side panel — GPS info */}
+        {/* Side panel */}
         <div className="hidden lg:flex w-72 border-l border-white/[0.06] bg-white/[0.01] flex-col p-4 gap-4 overflow-y-auto">
           <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-wider">
             GPS Status
           </h2>
 
-          {/* Status cards */}
           <div className="space-y-3">
             <InfoCard
               icon={<Navigation className="w-4 h-4" />}
@@ -140,24 +177,24 @@ export default function CommuterView() {
               active={!!position}
             />
             <InfoCard
-              icon={<MapPin className="w-4 h-4" />}
-              label="Points Logged"
-              value={trackingHistory.length.toString()}
-              active={trackingHistory.length > 0}
+              icon={<Users className="w-4 h-4" />}
+              label="Users Online"
+              value={activeUsers.size.toString()}
+              active={activeUsers.size > 0}
             />
           </div>
 
-          {/* Tracking status */}
+          {/* Connection status */}
           <div className="mt-auto pt-4 border-t border-white/[0.06]">
             <div className="flex items-center gap-2 text-xs text-gray-500">
               <div
                 className={`w-2 h-2 rounded-full ${
-                  isTracking ? 'bg-emerald-400 animate-pulse' : 'bg-gray-600'
+                  isConnected ? 'bg-emerald-400 animate-pulse' : 'bg-red-500'
                 }`}
               />
-              {isTracking
-                ? 'Tracking your location...'
-                : 'GPS inactive — tap Start GPS'}
+              {isConnected
+                ? 'Connected to live network'
+                : 'Disconnected — reconnecting...'}
             </div>
           </div>
         </div>
@@ -166,7 +203,6 @@ export default function CommuterView() {
   );
 }
 
-// ── Info card sub-component ──
 function InfoCard({ icon, label, value, active }) {
   return (
     <div

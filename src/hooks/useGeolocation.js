@@ -21,6 +21,7 @@ export default function useGeolocation(options = {}) {
   const [position, setPosition] = useState(null);
   const [error, setError] = useState(null);
   const [isTracking, setIsTracking] = useState(false);
+  const wasTrackingRef = useRef(localStorage.getItem('transit-gps-active') === 'true');
   const watchIdRef = useRef(null);
   const trackingHistoryRef = useRef([]);
 
@@ -74,6 +75,7 @@ export default function useGeolocation(options = {}) {
     }
 
     setIsTracking(true);
+    localStorage.setItem('transit-gps-active', 'true');
     setError(null);
     trackingHistoryRef.current = [];
 
@@ -98,11 +100,12 @@ export default function useGeolocation(options = {}) {
       watchIdRef.current = null;
     }
     setIsTracking(false);
+    localStorage.removeItem('transit-gps-active');
   }, []);
 
-  // Auto-start if requested
+  // Auto-start if requested OR if was tracking before refresh
   useEffect(() => {
-    if (autoStart) {
+    if (autoStart || wasTrackingRef.current) {
       startTracking();
     }
 

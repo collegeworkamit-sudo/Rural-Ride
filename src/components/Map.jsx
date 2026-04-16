@@ -40,6 +40,30 @@ const createUserIcon = (color = '#06b6d4') => {
   });
 };
 
+// ── Other user marker (no pulse, smaller) ──
+const createOtherUserIcon = (role = 'commuter') => {
+  const color = role === 'driver' ? '#f59e0b' : '#8b5cf6';
+  const emoji = role === 'driver' ? '🚗' : '👤';
+  return L.divIcon({
+    className: 'user-marker',
+    html: `
+      <div style="position:relative;width:28px;height:28px;">
+        <div style="
+          position:absolute;inset:0;
+          background:${color}20;
+          border:2px solid ${color}80;
+          border-radius:50%;
+          display:flex;align-items:center;justify-content:center;
+          font-size:14px;
+        ">${emoji}</div>
+      </div>
+    `,
+    iconSize: [28, 28],
+    iconAnchor: [14, 14],
+    popupAnchor: [0, -16],
+  });
+};
+
 // ── Auto-pan map to follow user position ──
 function MapFollower({ position, shouldFollow }) {
   const map = useMap();
@@ -74,6 +98,7 @@ function MapResizer() {
  *   trackingHistory: [{ lat, lng }] — trail of positions
  *   isTracking: boolean — whether GPS is active
  *   markerColor: string — color for user marker
+ *   activeUsers: Map — other connected users' positions
  *   className: string — custom CSS classes
  *   children: ReactNode — additional map layers
  */
@@ -82,6 +107,7 @@ export default function Map({
   trackingHistory = [],
   isTracking = false,
   markerColor = '#06b6d4',
+  activeUsers = new Map(),
   className = '',
   children,
 }) {
@@ -100,6 +126,9 @@ export default function Map({
   const trailPositions = trackingHistory
     .filter((p) => p.lat && p.lng)
     .map((p) => [p.lat, p.lng]);
+
+  // Convert activeUsers Map to array for rendering
+  const otherUsers = Array.from(activeUsers.values());
 
   return (
     <div className={`relative w-full h-full ${className}`}>
@@ -175,6 +204,31 @@ export default function Map({
           />
         )}
 
+        {/* ── Other connected users ── */}
+        {otherUsers.map((user) => (
+          <Marker
+            key={user.socketId}
+            position={[user.position.lat, user.position.lng]}
+            icon={createOtherUserIcon(user.role)}
+          >
+            <Popup className="dark-popup">
+              <div style={{ color: '#e5e7eb', fontSize: '12px' }}>
+                <p style={{ fontWeight: 600, marginBottom: '4px' }}>
+                  {user.role === 'driver' ? '🚗' : '👤'} {user.name}
+                </p>
+                <p style={{ color: '#9ca3af', textTransform: 'capitalize' }}>
+                  {user.role}
+                </p>
+                {user.position.speed > 0 && (
+                  <p style={{ color: '#9ca3af' }}>
+                    Speed: {(user.position.speed * 3.6).toFixed(1)} km/h
+                  </p>
+                )}
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
         {/* Additional layers from parent */}
         {children}
       </MapContainer>
@@ -243,6 +297,16 @@ export default function Map({
           {isTracking ? 'GPS Active' : 'GPS Inactive'}
         </div>
       </div>
+
+      {/* Online users count */}
+      {otherUsers.length > 0 && (
+        <div className="absolute top-4 left-32 z-[1000]">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium backdrop-blur-md bg-purple-500/15 border border-purple-500/30 text-purple-400">
+            <div className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
+            {otherUsers.length} online
+          </div>
+        </div>
+      )}
     </div>
   );
 }
