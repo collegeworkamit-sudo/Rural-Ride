@@ -2,13 +2,13 @@ import { Loader2 } from 'lucide-react';
 
 const variants = {
   primary:
-    'bg-gradient-to-r from-cyan-500 to-teal-400 text-gray-950 font-semibold hover:shadow-[0_0_24px_rgba(6,182,212,0.4)] hover:scale-[1.02]',
+    'bg-[#7DE5D0] text-gray-900 text-gray-950 font-semibold hover:shadow-none hover:scale-[1.02]',
   secondary:
     'bg-white/5 border border-white/10 text-gray-200 hover:bg-white/10 hover:border-white/20',
   ghost:
-    'bg-transparent text-cyan-400 hover:text-cyan-300 hover:bg-white/5 underline-offset-4',
+    'bg-transparent text-[#7DE5D0] hover:text-[#7DE5D0] hover:bg-white/5 underline-offset-4',
   danger:
-    'bg-gradient-to-r from-red-600 to-rose-500 text-white font-semibold hover:shadow-[0_0_24px_rgba(239,68,68,0.4)] hover:scale-[1.02]',
+    'bg-gradient-to-r from-red-600 to-rose-500 text-white font-semibold hover:shadow-none hover:scale-[1.02]',
 };
 
 export default function Button({

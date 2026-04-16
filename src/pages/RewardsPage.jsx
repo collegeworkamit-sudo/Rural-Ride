@@ -92,9 +92,9 @@ export default function RewardsPage() {
   const myPoints = profile?.points || 0;
 
   return (
-    <div className="min-h-screen bg-[#0a0f1c] text-white">
+    <div className="min-h-screen bg-[#111111] text-white">
       {/* Header */}
-      <div className="border-b border-white/[0.06] bg-white/[0.02] backdrop-blur-xl">
+      <div className="border-b border-transparent bg-[#181818] backdrop-blur-xl">
         <div className="max-w-3xl mx-auto px-4 py-4 flex items-center gap-4">
           <Button variant="ghost" onClick={() => navigate('/')} className="px-2 py-2">
             <ArrowLeft className="w-5 h-5" />
@@ -156,7 +156,7 @@ export default function RewardsPage() {
                 ${
                   tab === t.id
                     ? 'bg-white/10 border border-white/20 text-white'
-                    : 'bg-white/[0.02] border border-white/[0.06] text-gray-500 hover:bg-white/[0.05]'
+                    : 'bg-[#181818] border border-transparent text-gray-500 hover:bg-white/[0.05]'
                 }
               `}
             >
@@ -189,7 +189,7 @@ export default function RewardsPage() {
                       p-4 rounded-2xl border transition-all
                       ${canAfford && !alreadyClaimed
                         ? `bg-${color}-500/5 border-${color}-500/20 hover:border-${color}-500/40`
-                        : 'bg-white/[0.01] border-white/[0.06] opacity-60'
+                        : 'bg-white/[0.01] border-transparent opacity-60'
                       }
                     `}
                   >
@@ -271,14 +271,14 @@ export default function RewardsPage() {
                     p-4 rounded-2xl border transition-all
                     ${unlocked
                       ? 'bg-emerald-500/5 border-emerald-500/20'
-                      : 'bg-white/[0.01] border-white/[0.06]'
+                      : 'bg-white/[0.01] border-transparent'
                     }
                   `}
                 >
                   <div className="flex items-center gap-3">
                     <div className={`
                       w-12 h-12 rounded-xl flex items-center justify-center text-2xl
-                      ${unlocked ? 'bg-emerald-500/15' : 'bg-white/[0.03] grayscale opacity-50'}
+                      ${unlocked ? 'bg-emerald-500/15' : 'bg-[#282828] grayscale opacity-50'}
                     `}>
                       {badge.emoji}
                     </div>

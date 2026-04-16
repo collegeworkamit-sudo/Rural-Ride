@@ -75,10 +75,10 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0f1c] flex">
+    <div className="min-h-screen bg-[#111111] flex">
       {/* Left panel — branding */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-950/80 via-[#0a0f1c] to-teal-950/60" />
+        <div className="absolute inset-0 bg-[#111111]" />
         <div className="absolute top-20 left-20 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
         <div className="absolute bottom-32 right-16 w-56 h-56 bg-teal-500/10 rounded-full blur-3xl animate-pulse" />
 
@@ -92,13 +92,13 @@ export default function RegisterPage() {
         />
 
         <div className="relative z-10 max-w-md px-12 text-center">
-          <div className="w-20 h-20 mx-auto mb-8 rounded-2xl bg-gradient-to-br from-cyan-500 to-teal-400 flex items-center justify-center shadow-[0_0_60px_rgba(6,182,212,0.3)]">
+          <div className="w-20 h-20 mx-auto mb-8 rounded-2xl bg-[#7DE5D0] text-gray-900 flex items-center justify-center shadow-none">
             <MapPin className="w-10 h-10 text-gray-950" />
           </div>
 
           <h1 className="text-4xl font-bold text-white mb-4 tracking-tight">
             Join the{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-300">
+            <span className="text-[#7DE5D0]">
               Movement
             </span>
           </h1>
@@ -116,9 +116,9 @@ export default function RegisterPage() {
             ].map(({ value, label }) => (
               <div
                 key={label}
-                className="py-3 px-2 rounded-xl bg-white/[0.03] border border-white/[0.06]"
+                className="py-3 px-2 rounded-xl bg-[#282828] border border-transparent"
               >
-                <p className="text-cyan-400 font-bold text-lg">{value}</p>
+                <p className="text-[#7DE5D0] font-bold text-lg">{value}</p>
                 <p className="text-gray-500 text-xs mt-0.5">{label}</p>
               </div>
             ))}
@@ -131,16 +131,16 @@ export default function RegisterPage() {
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="lg:hidden text-center mb-8">
-            <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-400 flex items-center justify-center shadow-[0_0_40px_rgba(6,182,212,0.3)]">
+            <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-[#7DE5D0] text-gray-900 flex items-center justify-center shadow-none">
               <MapPin className="w-7 h-7 text-gray-950" />
             </div>
             <h1 className="text-2xl font-bold text-white">
-              Rural <span className="text-cyan-400">Rides</span>
+              Rural <span className="text-[#7DE5D0]">Rides</span>
             </h1>
           </div>
 
           {/* Form card */}
-          <div className="bg-white/[0.02] border border-white/[0.06] backdrop-blur-xl rounded-2xl p-8 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+          <div className="bg-[#181818] border border-transparent backdrop-blur-xl rounded-2xl p-8 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-white mb-2">
                 Create account
@@ -233,8 +233,8 @@ export default function RegisterPage() {
                         flex flex-col items-center gap-1.5 p-4 rounded-xl border
                         transition-all duration-200 cursor-pointer
                         ${formData.role === value
-                          ? 'bg-cyan-500/10 border-cyan-500/40 text-cyan-400 shadow-[0_0_16px_rgba(6,182,212,0.15)]'
-                          : 'bg-white/[0.02] border-white/[0.08] text-gray-400 hover:border-white/15 hover:bg-white/[0.04]'
+                          ? 'bg-cyan-500/10 border-[#7DE5D0]/40 text-[#7DE5D0] shadow-none'
+                          : 'bg-[#181818] border-transparent text-gray-400 hover:border-white/15 hover:bg-[#222222]'
                         }
                       `}
                     >
@@ -259,7 +259,7 @@ export default function RegisterPage() {
               Already have an account?{' '}
               <Link
                 to="/login"
-                className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
+                className="text-[#7DE5D0] hover:text-[#7DE5D0] font-medium transition-colors"
               >
                 Sign in
               </Link>

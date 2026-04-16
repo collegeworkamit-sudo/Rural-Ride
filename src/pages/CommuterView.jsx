@@ -106,15 +106,15 @@ export default function CommuterView() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-[#0a0f1c] text-white">
-      <nav className="border-b border-white/[0.06] bg-white/[0.02] backdrop-blur-xl shrink-0 z-10">
+    <div className="h-screen flex flex-col bg-[#111111] text-white">
+      <nav className="border-b border-transparent bg-[#181818] backdrop-blur-xl shrink-0 z-10">
         <div className="max-w-full mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-cyan-500 to-teal-400 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-lg bg-[#7DE5D0] text-gray-900 flex items-center justify-center">
               <MapPin className="w-5 h-5 text-gray-950" />
             </div>
             <h1 className="text-lg font-bold hidden sm:block">
-              Rural <span className="text-cyan-400">Rides</span>
+              Rural <span className="text-[#7DE5D0]">Rides</span>
             </h1>
           </div>
 
@@ -212,10 +212,10 @@ export default function CommuterView() {
               {sock.etas.slice(0, 4).map((eta) => (
                 <div
                   key={eta.routeId}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[#0d1117]/90 border border-cyan-500/15 backdrop-blur-md"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-[#0d1117]/90 border border-[#7DE5D0]/15 backdrop-blur-md"
                 >
                   <div className="w-8 h-8 rounded-lg bg-cyan-500/15 flex items-center justify-center shrink-0">
-                    <Clock className="w-4 h-4 text-cyan-400" />
+                    <Clock className="w-4 h-4 text-[#7DE5D0]" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium text-gray-200 truncate">{eta.routeName}</p>
@@ -225,7 +225,7 @@ export default function CommuterView() {
                     </div>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="text-lg font-bold text-cyan-400">{eta.etaMinutes}</p>
+                    <p className="text-lg font-bold text-[#7DE5D0]">{eta.etaMinutes}</p>
                     <p className="text-[10px] text-gray-500">min</p>
                   </div>
                 </div>
@@ -235,7 +235,7 @@ export default function CommuterView() {
         </div>
 
         {/* Side panel */}
-        <div className="hidden lg:flex w-72 border-l border-white/[0.06] bg-white/[0.01] flex-col p-4 gap-4 overflow-y-auto">
+        <div className="hidden lg:flex w-72 border-l border-transparent bg-white/[0.01] flex-col p-4 gap-4 overflow-y-auto">
           <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-wider">Live Status</h2>
 
           <div className="space-y-3">
@@ -253,7 +253,7 @@ export default function CommuterView() {
                 {sock.ghostRoutes.map((route) => {
                   const eta = sock.etas.find((e) => e.routeId === route._id);
                   return (
-                    <div key={route._id} className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                    <div key={route._id} className="p-3 rounded-xl bg-[#181818] border border-transparent">
                       <p className="text-xs font-medium text-gray-200">👻 {route.name}</p>
                       <div className="flex gap-3 mt-1">
                         <span className="text-[10px] text-gray-500">{route.userCount} users</span>
@@ -262,8 +262,8 @@ export default function CommuterView() {
                       </div>
                       {eta && (
                         <div className="mt-2 pt-2 border-t border-white/[0.04] flex items-center gap-2">
-                          <Clock className="w-3 h-3 text-cyan-400" />
-                          <span className="text-xs font-medium text-cyan-400">{eta.etaMinutes} min</span>
+                          <Clock className="w-3 h-3 text-[#7DE5D0]" />
+                          <span className="text-xs font-medium text-[#7DE5D0]">{eta.etaMinutes} min</span>
                           <span className="text-[10px] text-gray-500">{(eta.remainingDistance / 1000).toFixed(1)} km</span>
                           <span className="text-[10px] text-gray-500">{eta.remainingStops} stops left</span>
                         </div>
@@ -281,10 +281,10 @@ export default function CommuterView() {
               <h3 className="text-xs font-medium text-gray-400 mb-2">Nearby Routes ETA</h3>
               <div className="space-y-2">
                 {sock.etas.map((eta) => (
-                  <div key={eta.routeId} className="p-3 rounded-xl bg-cyan-500/5 border border-cyan-500/15">
+                  <div key={eta.routeId} className="p-3 rounded-xl bg-cyan-500/5 border border-[#7DE5D0]/15">
                     <div className="flex items-center justify-between">
                       <p className="text-xs font-medium text-gray-200">{eta.routeName}</p>
-                      <span className="text-sm font-bold text-cyan-400">{eta.etaMinutes} min</span>
+                      <span className="text-sm font-bold text-[#7DE5D0]">{eta.etaMinutes} min</span>
                     </div>
                     <div className="flex gap-3 mt-1">
                       <span className="text-[10px] text-gray-500">{(eta.remainingDistance / 1000).toFixed(1)} km</span>
@@ -297,7 +297,7 @@ export default function CommuterView() {
             </div>
           )}
 
-          <div className="mt-auto pt-4 border-t border-white/[0.06]">
+          <div className="mt-auto pt-4 border-t border-transparent">
             <div className="flex items-center gap-2 text-xs text-gray-500">
               <div className={`w-2 h-2 rounded-full ${sock.isConnected ? 'bg-emerald-400 animate-pulse' : 'bg-red-500'}`} />
               {sock.isConnected ? 'Connected to live network' : 'Disconnected'}
@@ -311,7 +311,7 @@ export default function CommuterView() {
 
 function InfoCard({ icon, label, value, active }) {
   return (
-    <div className={`p-3 rounded-xl border transition-colors ${active ? 'bg-white/[0.03] border-white/[0.08]' : 'bg-white/[0.01] border-white/[0.04]'}`}>
+    <div className={`p-3 rounded-xl border transition-colors ${active ? 'bg-[#282828] border-transparent' : 'bg-white/[0.01] border-white/[0.04]'}`}>
       <div className="flex items-center gap-2 text-gray-500 mb-1">{icon}<span className="text-xs">{label}</span></div>
       <p className={`text-sm font-medium ${active ? 'text-gray-200' : 'text-gray-600'}`}>{value}</p>
     </div>

@@ -49,9 +49,9 @@ export default function LeaderboardPage() {
   if (loading) return <Loader />;
 
   return (
-    <div className="min-h-screen bg-[#0a0f1c] text-white">
+    <div className="min-h-screen bg-[#111111] text-white">
       {/* Header */}
-      <div className="border-b border-white/[0.06] bg-white/[0.02] backdrop-blur-xl">
+      <div className="border-b border-transparent bg-[#181818] backdrop-blur-xl">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-4">
           <Button variant="ghost" onClick={() => navigate('/')} className="px-2 py-2">
             <ArrowLeft className="w-5 h-5" />
@@ -71,10 +71,10 @@ export default function LeaderboardPage() {
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
         {/* Your stats card */}
         {user && (
-          <div className="p-5 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-teal-500/5 border border-cyan-500/20">
+          <div className="p-5 rounded-2xl bg-gradient-to-br from-cyan-500/10 to-teal-500/5 border border-[#7DE5D0]/20">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 font-bold text-lg">
+                <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-[#7DE5D0] font-bold text-lg">
                   {myRank > 0 ? `#${myRank}` : '—'}
                 </div>
                 <div>
@@ -83,7 +83,7 @@ export default function LeaderboardPage() {
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-2xl font-bold text-cyan-400">{user.points || 0}</p>
+                <p className="text-2xl font-bold text-[#7DE5D0]">{user.points || 0}</p>
                 <p className="text-xs text-gray-500">points</p>
               </div>
             </div>
@@ -118,10 +118,10 @@ export default function LeaderboardPage() {
                   className={`
                     flex items-center gap-4 p-4 rounded-xl border transition-all
                     ${isMe
-                      ? 'bg-cyan-500/10 border-cyan-500/30 ring-1 ring-cyan-500/20'
+                      ? 'bg-cyan-500/10 border-[#7DE5D0]/30 ring-1 ring-[#7DE5D0]/20'
                       : style
                         ? `bg-gradient-to-r ${style.bg} ${style.border}`
-                        : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04]'
+                        : 'bg-[#181818] border-transparent hover:bg-[#222222]'
                     }
                   `}
                 >
@@ -144,8 +144,8 @@ export default function LeaderboardPage() {
 
                   {/* Name */}
                   <div className="flex-1 min-w-0">
-                    <p className={`font-medium truncate ${isMe ? 'text-cyan-300' : 'text-gray-200'}`}>
-                      {entry.name} {isMe && <span className="text-xs text-cyan-500">(you)</span>}
+                    <p className={`font-medium truncate ${isMe ? 'text-[#7DE5D0]' : 'text-gray-200'}`}>
+                      {entry.name} {isMe && <span className="text-xs text-[#7DE5D0]">(you)</span>}
                     </p>
                     <p className="text-xs text-gray-500 capitalize">{entry.role}</p>
                   </div>
@@ -169,7 +169,7 @@ export default function LeaderboardPage() {
 
 function PointCard({ icon, label, value }) {
   return (
-    <div className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] text-center">
+    <div className="p-3 rounded-xl bg-[#181818] border border-transparent text-center">
       <div className="flex items-center justify-center gap-1.5 text-gray-500 mb-1">
         {icon}
         <span className="text-[10px]">{label}</span>

@@ -350,7 +350,7 @@ export default function Map({
           }}
           className={`absolute bottom-4 right-4 z-[1000] w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 cursor-pointer ${
             followUser
-              ? 'bg-cyan-500/20 border border-cyan-500/40 text-cyan-400'
+              ? 'bg-cyan-500/20 border border-[#7DE5D0]/40 text-[#7DE5D0]'
               : 'bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10'
           }`}
           title={followUser ? 'Stop following' : 'Follow my location'}

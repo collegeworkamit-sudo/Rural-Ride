@@ -33,7 +33,7 @@ export default function Input({
           type={inputType}
           className={`
             w-full px-4 py-3 rounded-xl
-            bg-white/[0.03] border
+            bg-[#282828] border
             text-gray-100 text-sm
             placeholder:text-gray-600
             transition-all duration-200
@@ -43,7 +43,7 @@ export default function Input({
             ${
               error
                 ? 'border-red-500/60 focus:border-red-400 focus:ring-2 focus:ring-red-500/20'
-                : 'border-white/[0.08] focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/20 hover:border-white/15'
+                : 'border-transparent focus:border-[#7DE5D0]/60 focus:ring-2 focus:ring-[#7DE5D0]/20 hover:border-white/15'
             }
           `}
           {...props}

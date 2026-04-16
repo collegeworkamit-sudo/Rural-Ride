@@ -88,8 +88,8 @@ export default function DriverView() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-[#0a0f1c] text-white">
-      <nav className="border-b border-white/[0.06] bg-white/[0.02] backdrop-blur-xl shrink-0 z-10">
+    <div className="h-screen flex flex-col bg-[#111111] text-white">
+      <nav className="border-b border-transparent bg-[#181818] backdrop-blur-xl shrink-0 z-10">
         <div className="max-w-full mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-teal-500 to-emerald-400 flex items-center justify-center">
@@ -177,7 +177,7 @@ export default function DriverView() {
           )}
         </div>
 
-        <div className="hidden lg:flex w-72 border-l border-white/[0.06] bg-white/[0.01] flex-col p-4 gap-4 overflow-y-auto">
+        <div className="hidden lg:flex w-72 border-l border-transparent bg-white/[0.01] flex-col p-4 gap-4 overflow-y-auto">
           <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-wider">Driver Status</h2>
 
           <div className="space-y-3">
@@ -195,7 +195,7 @@ export default function DriverView() {
             </div>
           </div>
 
-          <div className="mt-auto pt-4 border-t border-white/[0.06]">
+          <div className="mt-auto pt-4 border-t border-transparent">
             <div className="flex items-center gap-2 text-xs text-gray-500">
               <div className={`w-2 h-2 rounded-full ${sock.isConnected ? 'bg-emerald-400 animate-pulse' : 'bg-red-500'}`} />
               {sock.isConnected ? 'Connected to live network' : 'Disconnected'}
@@ -209,7 +209,7 @@ export default function DriverView() {
 
 function InfoCard({ icon, label, value, active }) {
   return (
-    <div className={`p-3 rounded-xl border transition-colors ${active ? 'bg-white/[0.03] border-white/[0.08]' : 'bg-white/[0.01] border-white/[0.04]'}`}>
+    <div className={`p-3 rounded-xl border transition-colors ${active ? 'bg-[#282828] border-transparent' : 'bg-white/[0.01] border-white/[0.04]'}`}>
       <div className="flex items-center gap-2 text-gray-500 mb-1">{icon}<span className="text-xs">{label}</span></div>
       <p className={`text-sm font-medium ${active ? 'text-gray-200' : 'text-gray-600'}`}>{value}</p>
     </div>

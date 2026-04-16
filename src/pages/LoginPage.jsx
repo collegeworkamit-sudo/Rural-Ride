@@ -57,11 +57,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0f1c] flex">
+    <div className="min-h-screen bg-[#111111] flex">
       {/* Left panel — branding */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center">
         {/* Gradient bg */}
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-950/80 via-[#0a0f1c] to-teal-950/60" />
+        <div className="absolute inset-0 bg-[#111111]" />
 
         {/* Animated floating elements */}
         <div className="absolute top-20 left-20 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
@@ -77,21 +77,21 @@ export default function LoginPage() {
           }}
         />
 
-        <div className="relative z-10 max-w-md px-12 text-center">
+        <div className="relative z-10 max-w-md px-12 text-left">
           {/* Logo */}
-          <div className="w-20 h-20 mx-auto mb-8 rounded-2xl bg-gradient-to-br from-cyan-500 to-teal-400 flex items-center justify-center shadow-[0_0_60px_rgba(6,182,212,0.3)]">
-            <MapPin className="w-10 h-10 text-gray-950" />
+          <div className="mb-4">
+            <MapPin className="w-10 h-10 text-[#7DE5D0]" strokeWidth={2.5} />
           </div>
 
-          <h1 className="text-4xl font-bold text-white mb-4 tracking-tight">
-            Rural <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-300">Rides</span>
+          <h1 className="text-5xl font-black text-[#7DE5D0] mb-6 tracking-tight uppercase">
+            Rural Rides
           </h1>
           <p className="text-gray-400 text-lg leading-relaxed mb-10">
             Turn commuters into live sensors. Map and predict unorganized transit in real time.
           </p>
 
           {/* Feature pills */}
-          <div className="flex flex-wrap gap-3 justify-center">
+          <div className="flex flex-wrap gap-3 justify-start">
             {[
               { icon: Bus, label: 'Ghost Routes' },
               { icon: Navigation, label: 'Live ETA' },
@@ -99,9 +99,9 @@ export default function LoginPage() {
             ].map(({ icon: FIcon, label }) => (
               <div
                 key={label}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.04] border border-white/[0.08] text-gray-300 text-sm"
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#222222] border border-transparent text-gray-300 text-sm"
               >
-                <FIcon className="w-3.5 h-3.5 text-cyan-400" />
+                <FIcon className="w-3.5 h-3.5 text-[#7DE5D0]" />
                 {label}
               </div>
             ))}
@@ -114,16 +114,16 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           {/* Mobile logo (hidden on desktop) */}
           <div className="lg:hidden text-center mb-10">
-            <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-400 flex items-center justify-center shadow-[0_0_40px_rgba(6,182,212,0.3)]">
+            <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-[#7DE5D0] text-gray-900 flex items-center justify-center shadow-none">
               <MapPin className="w-7 h-7 text-gray-950" />
             </div>
             <h1 className="text-2xl font-bold text-white">
-              Rural <span className="text-cyan-400">Rides</span>
+              Rural <span className="text-[#7DE5D0]">Rides</span>
             </h1>
           </div>
 
           {/* Form card */}
-          <div className="bg-white/[0.02] border border-white/[0.06] backdrop-blur-xl rounded-2xl p-8 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
+          <div className="bg-[#181818] border-l-4 border-l-[#7DE5D0] rounded-r-2xl p-8 shadow-2xl">
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-white mb-2">Welcome back</h2>
               <p className="text-gray-500 text-sm">
@@ -134,7 +134,7 @@ export default function LoginPage() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <Input
                 id="login-email"
-                label="Email"
+                label="EMAIL ADDRESS"
                 type="email"
                 name="email"
                 placeholder="you@example.com"
@@ -147,7 +147,7 @@ export default function LoginPage() {
 
               <Input
                 id="login-password"
-                label="Password"
+                label="PASSWORD"
                 type="password"
                 name="password"
                 placeholder="••••••••"
@@ -171,7 +171,7 @@ export default function LoginPage() {
               Don't have an account?{' '}
               <Link
                 to="/register"
-                className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
+                className="text-[#7DE5D0] hover:text-[#7DE5D0] font-medium transition-colors"
               >
                 Create one
               </Link>
