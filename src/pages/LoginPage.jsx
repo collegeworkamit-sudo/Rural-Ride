@@ -84,7 +84,7 @@ export default function LoginPage() {
           </div>
 
           <h1 className="text-4xl font-bold text-white mb-4 tracking-tight">
-            Transit <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-300">Mapper</span>
+            Rural <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-300">Rides</span>
           </h1>
           <p className="text-gray-400 text-lg leading-relaxed mb-10">
             Turn commuters into live sensors. Map and predict unorganized transit in real time.
@@ -118,7 +118,7 @@ export default function LoginPage() {
               <MapPin className="w-7 h-7 text-gray-950" />
             </div>
             <h1 className="text-2xl font-bold text-white">
-              Transit <span className="text-cyan-400">Mapper</span>
+              Rural <span className="text-cyan-400">Rides</span>
             </h1>
           </div>
 

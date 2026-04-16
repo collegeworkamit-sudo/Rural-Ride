@@ -62,7 +62,7 @@ export default function LeaderboardPage() {
             </div>
             <div>
               <h1 className="text-lg font-bold">Leaderboard</h1>
-              <p className="text-xs text-gray-500">Top transit mappers</p>
+              <p className="text-xs text-gray-500">Top RuralRides</p>
             </div>
           </div>
         </div>
@@ -117,10 +117,9 @@ export default function LeaderboardPage() {
                   key={entry._id}
                   className={`
                     flex items-center gap-4 p-4 rounded-xl border transition-all
-                    ${
-                      isMe
-                        ? 'bg-cyan-500/10 border-cyan-500/30 ring-1 ring-cyan-500/20'
-                        : style
+                    ${isMe
+                      ? 'bg-cyan-500/10 border-cyan-500/30 ring-1 ring-cyan-500/20'
+                      : style
                         ? `bg-gradient-to-r ${style.bg} ${style.border}`
                         : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.04]'
                     }
@@ -130,10 +129,9 @@ export default function LeaderboardPage() {
                   <div
                     className={`
                       w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm
-                      ${
-                        style
-                          ? `${style.color}`
-                          : 'text-gray-500'
+                      ${style
+                        ? `${style.color}`
+                        : 'text-gray-500'
                       }
                     `}
                   >

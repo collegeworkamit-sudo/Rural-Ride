@@ -135,7 +135,7 @@ export default function RegisterPage() {
               <MapPin className="w-7 h-7 text-gray-950" />
             </div>
             <h1 className="text-2xl font-bold text-white">
-              Transit <span className="text-cyan-400">Mapper</span>
+              Rural <span className="text-cyan-400">Rides</span>
             </h1>
           </div>
 
@@ -232,10 +232,9 @@ export default function RegisterPage() {
                       className={`
                         flex flex-col items-center gap-1.5 p-4 rounded-xl border
                         transition-all duration-200 cursor-pointer
-                        ${
-                          formData.role === value
-                            ? 'bg-cyan-500/10 border-cyan-500/40 text-cyan-400 shadow-[0_0_16px_rgba(6,182,212,0.15)]'
-                            : 'bg-white/[0.02] border-white/[0.08] text-gray-400 hover:border-white/15 hover:bg-white/[0.04]'
+                        ${formData.role === value
+                          ? 'bg-cyan-500/10 border-cyan-500/40 text-cyan-400 shadow-[0_0_16px_rgba(6,182,212,0.15)]'
+                          : 'bg-white/[0.02] border-white/[0.08] text-gray-400 hover:border-white/15 hover:bg-white/[0.04]'
                         }
                       `}
                     >

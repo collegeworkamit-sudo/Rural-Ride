@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import useGeolocation from '../hooks/useGeolocation';
 import useSocket from '../hooks/useSocket';
 import Map from '../components/Map';
 import Button from '../components/common/Button';
+import api from '../services/api';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -22,6 +23,8 @@ import {
   Route,
   Play,
   Square,
+  Gift,
+  Gamepad2,
 } from 'lucide-react';
 
 export default function DriverView() {
@@ -46,8 +49,7 @@ export default function DriverView() {
       const r = sock.lastTripResult;
       if (r.success) {
         toast.success(
-          `Trip logged! ${r.pointsLogged} GPS points. ${
-            r.isNewRoute ? `New route: ${r.route?.name}` : r.route ? `Merged: ${r.route?.name}` : ''
+          `Trip logged! ${r.pointsLogged} GPS points. ${r.isNewRoute ? `New route: ${r.route?.name}` : r.route ? `Merged: ${r.route?.name}` : ''
           }${r.rewards?.totalAwarded ? ` | +${r.rewards.totalAwarded} pts 🏆` : ''}`,
           { duration: 5000 }
         );
@@ -67,6 +69,24 @@ export default function DriverView() {
     geo.stopTracking();
   };
 
+  const [simRunning, setSimRunning] = useState(false);
+
+  const toggleSimulator = async () => {
+    try {
+      if (simRunning) {
+        await api.post('/simulator/stop');
+        toast.success('Simulator stopped — routes processed!');
+        setSimRunning(false);
+      } else {
+        await api.post('/simulator/start', { riderCount: 5 });
+        toast.success('Simulator started — 5 riders moving!');
+        setSimRunning(true);
+      }
+    } catch (err) {
+      toast.error('Simulator error: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
   return (
     <div className="h-screen flex flex-col bg-[#0a0f1c] text-white">
       <nav className="border-b border-white/[0.06] bg-white/[0.02] backdrop-blur-xl shrink-0 z-10">
@@ -76,7 +96,7 @@ export default function DriverView() {
               <Car className="w-5 h-5 text-gray-950" />
             </div>
             <h1 className="text-lg font-bold hidden sm:block">
-              Transit <span className="text-teal-400">Driver</span>
+              RuralRides <span className="text-teal-400">Driver</span>
             </h1>
           </div>
 
@@ -93,9 +113,17 @@ export default function DriverView() {
               )}
             </Button>
 
-            <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs ${
-              sock.isConnected ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border border-red-500/20 text-red-400'
-            }`}>
+            <Button
+              variant={simRunning ? 'danger' : 'secondary'}
+              onClick={toggleSimulator}
+              className="px-3 py-2 text-xs"
+            >
+              <Gamepad2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{simRunning ? 'Stop Sim' : 'Simulate'}</span>
+            </Button>
+
+            <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs ${sock.isConnected ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border border-red-500/20 text-red-400'
+              }`}>
               {sock.isConnected ? <Wifi className="w-3 h-3" /> : <WifiOff className="w-3 h-3" />}
             </div>
 
@@ -104,6 +132,14 @@ export default function DriverView() {
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-xs cursor-pointer hover:bg-yellow-500/20 transition-colors"
             >
               <Trophy className="w-3 h-3" /><span className="font-medium">{user?.points || 0}</span>
+            </div>
+
+            <div
+              onClick={() => navigate('/rewards')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs cursor-pointer hover:bg-purple-500/20 transition-colors"
+            >
+              <Gift className="w-3 h-3" />
+              <span className="hidden sm:inline font-medium">Rewards</span>
             </div>
 
             <div className="flex items-center gap-2">
